@@ -56,6 +56,7 @@ def uniform_content_placement(topology, contents, seed=None):
     random.seed(seed)
     source_nodes = get_sources(topology)
     content_placement = collections.defaultdict(set)
+    print(source_nodes)
     for c in contents:
         content_placement[random.choice(source_nodes)].add(c)
     apply_content_placement(content_placement, topology)

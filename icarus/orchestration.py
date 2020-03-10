@@ -95,6 +95,7 @@ class Orchestrator(object):
             # Schedule experiments from the queue
             while queue:
                 experiment = queue.popleft()
+                #print(experiment)
                 for _ in range(self.settings.N_REPLICATIONS):
                     job_queue.append(self.pool.apply_async(run_scenario,
                             args=(self.settings, experiment,
@@ -212,6 +213,8 @@ def run_scenario(settings, params, curr_exp, n_exp):
             logger.error('No topology factory implementation for %s was found.'
                          % topology_name)
             return None
+        #print(TOPOLOGY_FACTORY[topology_name].__name__)
+        #print(topology_spec)
         topology = TOPOLOGY_FACTORY[topology_name](**topology_spec)
 
         workload_spec = tree['workload']
@@ -246,6 +249,9 @@ def run_scenario(settings, params, curr_exp, n_exp):
             logger.error('No content placement implementation named %s was found.'
                          % contpl_name)
             return None
+
+        print(CONTENT_PLACEMENT[contpl_name].__name__)
+
         CONTENT_PLACEMENT[contpl_name](topology, workload.contents, **contpl_spec)
 
         # caching and routing strategy definition

@@ -30,7 +30,7 @@ RESULTS_FORMAT = 'PICKLE'
 
 # Number of times each experiment is replicated
 # This is necessary for extracting confidence interval of selected metrics
-N_REPLICATIONS = 10
+N_REPLICATIONS = 1
 
 # List of metrics to be measured in the experiments
 # The implementation of data collectors are located in ./icaurs/execution/collectors.py
@@ -55,32 +55,34 @@ ALPHA = [0.8]
 NETWORK_CACHE = [0.02]
 
 # Number of content objects
-N_CONTENTS = 3*10**5
+N_CONTENTS = 3*10**3
 
 # Number of requests per second (over the whole network)
 NETWORK_REQUEST_RATE = 20.0
 
 # Number of content requests generated to prepopulate the caches
 # These requests are not logged
-N_WARMUP_REQUESTS = 3*10**4
+N_WARMUP_REQUESTS = 3*10**2
 
 # Number of content requests generated after the warmup and logged
 # to generate results. 
-N_MEASURED_REQUESTS = 6*10**5
+N_MEASURED_REQUESTS = 6*10**4
 
 # List of all implemented topologies
 # Topology implementations are located in ./icarus/scenarios/topology.py
 TOPOLOGIES =  [
-        'WIDE',
+        #'GARR_2',
+        #'GEANT_2',
+        'TEST_TOP'
               ]
 
 # List of caching and routing strategies
 # The code is located in ./icarus/models/strategy.py
 STRATEGIES = [
      'LCE',             # Leave Copy Everywhere
-     'PROB_CACHE',      # ProbCache
-     'LCD',             # Leave Copy Down
-     'TEST',
+     #'PROB_CACHE',      # ProbCache
+     #'LCD',             # Leave Copy Down
+     #'TEST',
              ]
 
 # Cache replacement policy used by the network caches.
