@@ -80,10 +80,10 @@ class IcnTopology(fnss.Topology):
         sources : set
             Set of source nodes
         """
-        print([(v,self.node[v]['stack']) for v in self if 'stack' in self.node[v]])
+        #print([(v,self.node[v]['stack']) for v in self if 'stack' in self.node[v]])
         return set(v for v in self
                    if 'stack' in self.node[v]
-                   and self.node[v]['stack'][0] == 'source')
+                   and self.node[v]['stack'][0] in ('all','source'))
 
     def receivers(self):
         """Return a set of receiver nodes
@@ -95,7 +95,7 @@ class IcnTopology(fnss.Topology):
         """
         return set(v for v in self
                    if 'stack' in self.node[v]
-                   and self.node[v]['stack'][0] == 'receiver')
+                   and self.node[v]['stack'][0] in ('all','receiver'))
 
 
 @register_topology_factory('TREE')
@@ -800,7 +800,7 @@ def topology_test(**kwargs):
     # routers are all remaining nodes --> 27 caches
     routers = [n for n in topology.nodes_iter()]
     
-    print(sources)
+    #print(sources)
     
     '''artificial_receivers = list(range(1000, 1000 + len(routers)))
     for i in range(len(routers)):
@@ -816,11 +816,8 @@ def topology_test(**kwargs):
     # Deploy stacks
     topology.graph['icr_candidates'] = set(icr_candidates)
     for v in sources:
-        fnss.add_stack(topology, v, 'source')
-    for v in receivers:
-        fnss.add_stack(topology, v, 'receiver')
-    for v in routers:
-        fnss.add_stack(topology, v, 'router')
+        fnss.add_stack(topology, v, 'all')
+        
     # label links as internal or external
     for u, v in topology.edges():
         topology.edge[u][v]['type'] = 'internal'

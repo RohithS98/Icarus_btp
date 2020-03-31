@@ -27,7 +27,7 @@ def apply_content_placement(placement, topology):
         topology.node[v]['stack'][1]['contents'] = contents
 
 def get_sources(topology):
-    return [v for v in topology if topology.node[v]['stack'][0] == 'source']
+    return [v for v in topology if topology.node[v]['stack'][0] in ('source', 'all')]
 
 @register_content_placement('UNIFORM')
 def uniform_content_placement(topology, contents, seed=None):

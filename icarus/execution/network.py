@@ -373,7 +373,14 @@ class NetworkModel(object):
         cache_size = {}
         for node in topology.nodes_iter():
             stack_name, stack_props = fnss.get_stack(topology, node)
-            if stack_name == 'router':
+            if stack_name == 'all':
+                if 'cache_size' in stack_props:
+                    cache_size[node] = stack_props['cache_size']
+                contents = stack_props['contents']
+                self.source_node[node] = contents
+                for content in contents:
+                    self.content_source[content] = node
+            elif stack_name == 'router':
                 if 'cache_size' in stack_props:
                     cache_size[node] = stack_props['cache_size']
             elif stack_name == 'source':
@@ -583,6 +590,21 @@ class NetworkController(object):
         content : bool
             True if the content is available, False otherwise
         """
+        name, props = fnss.get_stack(self.model.topology, node)
+        if name == 'all':
+            if self.session['content'] in props['contents']:
+                if self.collector is not None and self.session['log']:
+                    self.collector.server_hit(node)
+                return True
+            cache_hit = self.model.cache[node].get(self.session['content'])
+            if cache_hit:
+                if self.session['log']:
+                    self.collector.cache_hit(node)
+            else:
+                if self.session['log']:
+                    self.collector.cache_miss(node)
+            return cache_hit
+            
         if node in self.model.cache:
             cache_hit = self.model.cache[node].get(self.session['content'])
             if cache_hit:
@@ -592,7 +614,7 @@ class NetworkController(object):
                 if self.session['log']:
                     self.collector.cache_miss(node)
             return cache_hit
-        name, props = fnss.get_stack(self.model.topology, node)
+        
         if name == 'source' and self.session['content'] in props['contents']:
             if self.collector is not None and self.session['log']:
                 self.collector.server_hit(node)
