@@ -51,12 +51,11 @@ def exec_experiment(topology, workload, netconf, strategy, cache_policy, collect
                        for name, params in collectors.items()]
     collector = CollectorProxy(view, collectors_inst)
     controller.attach_collector(collector)
-
+    
     strategy_name = strategy['name']
     strategy_args = {k: v for k, v in strategy.items() if k != 'name'}
     strategy_inst = STRATEGY[strategy_name](view, controller, **strategy_args)
-    #print(strategy_inst)
-    #print(1,len(list(workload)))
+    print(type(workload))
     for time, event in workload:
         #print(time, event)
         strategy_inst.process_event(time, **event)

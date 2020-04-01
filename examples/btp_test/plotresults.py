@@ -384,7 +384,7 @@ def run(config, results, plotdir):
     strategies = settings.STRATEGIES
     # Plot graphs
     plot_cache_hit(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)
-    #plot_path_stretch(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)
+    plot_path_stretch(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)
     plot_cache_evictions(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)
     plot_cache_utilization(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)
     plot_cache_diversity(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)

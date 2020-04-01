@@ -88,6 +88,7 @@ class StationaryWorkload(object):
             raise ValueError('alpha must be positive')
         if beta < 0:
             raise ValueError('beta must be positive')
+        self.topology = topology
         self.receivers = [v for v in topology.nodes_iter()
                      if topology.node[v]['stack'][0] in ('receiver', 'all')]
         self.zipf = TruncatedZipfDist(alpha, n_contents)
@@ -95,7 +96,6 @@ class StationaryWorkload(object):
         self.contents = range(1, n_contents + 1)
         self.alpha = alpha
         self.rate = rate
-        self.topology = topology
         self.n_warmup = n_warmup
         self.n_measured = n_measured
         random.seed(seed)
@@ -115,9 +115,10 @@ class StationaryWorkload(object):
             else:
                 receiver = self.receivers[self.receiver_dist.rv() - 1]
             content = int(self.zipf.rv())
-            while content in self.topology.node[receiver]['stack'][1]['contents']:
-                #print('coll')
-                content = int(self.zipf.rv())
+            if self.topology.node[receiver]['stack'][1]:
+                while content in self.topology.node[receiver]['stack'][1]['contents']:
+                    #print('coll')
+                    content = int(self.zipf.rv())
             log = (req_counter >= self.n_warmup)
             event = {'receiver': receiver, 'content': content, 'log': log}
             yield (t_event, event)
