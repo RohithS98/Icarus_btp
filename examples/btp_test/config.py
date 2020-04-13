@@ -30,7 +30,7 @@ RESULTS_FORMAT = 'PICKLE'
 
 # Number of times each experiment is replicated
 # This is necessary for extracting confidence interval of selected metrics
-N_REPLICATIONS = 10
+N_REPLICATIONS = 1
 
 # List of metrics to be measured in the experiments
 # The implementation of data collectors are located in ./icaurs/execution/collectors.py
@@ -49,13 +49,13 @@ DATA_COLLECTORS = ['CACHE_HIT_RATIO', 'UTILIZATION', 'EVICTIONS', 'DIVERSITY', '
 # This would give problems while trying to plot the results because if for
 # example I wanted to filter experiment with alpha=0.8, experiments with
 # alpha = 0.799999999999 would not be recognized 
-ALPHA = [2]
+ALPHA = [0.5]
 
 # Total size of network cache as a fraction of content population
-NETWORK_CACHE = [0.04]
+NETWORK_CACHE = [0.05]
 
 # Number of content objects
-N_CONTENTS = 3*10**4
+N_CONTENTS = 3*10**5
 
 # Number of requests per second (over the whole network)
 NETWORK_REQUEST_RATE = 10.0
@@ -71,7 +71,6 @@ N_MEASURED_REQUESTS = 5*10**4
 # List of all implemented topologies
 # Topology implementations are located in ./icarus/scenarios/topology.py
 TOPOLOGIES =  [
-        #'GARR_2',
         'TEST_TOP',
         #'GEANT_2',
               ]
@@ -79,16 +78,16 @@ TOPOLOGIES =  [
 # List of caching and routing strategies
 # The code is located in ./icarus/models/strategy.py
 STRATEGIES = [
-     'LCE',             # Leave Copy Everywhere
-     'PROB_CACHE',      # ProbCache
+     'LCD',             # Leave Copy Everywhere
+     #'PROB_CACHE',      # ProbCache
      'LCD',             # Leave Copy Down
-     'TEST',
+     #'TEST',
              ]
 
 # Cache replacement policy used by the network caches.
 # Supported policies are: 'LRU', 'LFU', 'FIFO', 'RAND' and 'NULL'
 # Cache policy implmentations are located in ./icarus/models/cache.py
-CACHE_POLICY = 'LRU'
+CACHE_POLICIES = ['LRU','BIP']
 
 # Queue of experiments
 EXPERIMENT_QUEUE = deque()
@@ -101,18 +100,19 @@ default['workload'] = {'name':       'STATIONARY',
                        }
 default['cache_placement']['name'] = 'UNIFORM'
 default['content_placement']['name'] = 'UNIFORM'
-default['cache_policy']['name'] = CACHE_POLICY
+#default['cache_policy']['name'] = CACHE_POLICY
 
 # Create experiments multiplexing all desired parameters
 for alpha in ALPHA:
-    for strategy in STRATEGIES:
+    for strategy, cache_policy in zip(STRATEGIES,CACHE_POLICIES):
         for topology in TOPOLOGIES:
             for network_cache in NETWORK_CACHE:
                 experiment = copy.deepcopy(default)
                 experiment['workload']['alpha'] = alpha
                 experiment['strategy']['name'] = strategy
+                experiment['cache_policy']['name'] = cache_policy
                 experiment['topology']['name'] = topology
                 experiment['cache_placement']['network_cache'] = network_cache
-                experiment['desc'] = "Alpha: %s, strategy: %s, topology: %s, network cache: %s" \
-                                     % (str(alpha), strategy, topology, str(network_cache))
+                experiment['desc'] = "Alpha: %s, strategy: %s, topology: %s, cache policy: %s, network cache: %s" \
+                 % (str(alpha), strategy, topology, str(cache_policy), str(network_cache))
                 EXPERIMENT_QUEUE.append(experiment)

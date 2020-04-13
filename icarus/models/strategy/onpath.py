@@ -228,6 +228,7 @@ class TestCache(Strategy):
             self.controller.get_content(v)
             serving_node = v
         # Return content
+        
         path = list(reversed(self.view.shortest_path(receiver, serving_node)))
         # Leave a copy of the content only in the cache one level down the hit
         # caching node
@@ -238,17 +239,19 @@ class TestCache(Strategy):
             if not copied and v != receiver and self.view.has_cache(v):
                 evicted = self.controller.put_content(v)
                 copied = True
+
         # If data is evicted, copy it one level up the path
         if evicted and serving_node != source:
         	evictedSource = self.view.content_source(evicted)
         	path = self.view.shortest_path(serving_node, evictedSource)
-        	u, v = path_links(path)[0]
-        	temp = self.controller.session['content']
-        	if self.view.has_cache(v):
-        		self.controller.session['content'] = evicted
-        		self.controller.forward_content_hop(u, v)
-        		self.controller.put_content(v)
-        		self.controller.session['content'] = temp
+        	if path_links(path):
+		        u, v = path_links(path)[0]
+		        temp = self.controller.session['content']
+		        if self.view.has_cache(v):
+		    	    self.controller.session['content'] = evicted
+		    	    self.controller.forward_content_hop(u, v)
+		    	    self.controller.put_content(v)
+		    	    self.controller.session['content'] = temp
         self.controller.end_session()
 
 

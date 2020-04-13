@@ -158,6 +158,7 @@ def topology_path(n, delay=1, **kwargs):
     topology : IcnTopology
         The topology object
     """
+    #print(1)
     topology = fnss.line_topology(n)
     receivers = [0]
     routers = range(1, n - 1)

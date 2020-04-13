@@ -205,7 +205,7 @@ def run_scenario(settings, params, curr_exp, n_exp):
 
         # Copy parameters so that they can be manipulated
         tree = copy.deepcopy(params)
-
+	
         # Set topology
         topology_spec = tree['topology']
         topology_name = topology_spec.pop('name')
@@ -216,6 +216,7 @@ def run_scenario(settings, params, curr_exp, n_exp):
         #print(TOPOLOGY_FACTORY[topology_name].__name__)
         #print(topology_spec)
         topology = TOPOLOGY_FACTORY[topology_name](**topology_spec)
+        #print(TOPOLOGY_FACTORY[topology_name].__name__)
 
         workload_spec = tree['workload']
         workload_name = workload_spec.pop('name')
@@ -250,7 +251,7 @@ def run_scenario(settings, params, curr_exp, n_exp):
                          % contpl_name)
             return None
 
-        print(CONTENT_PLACEMENT[contpl_name].__name__)
+        #print(CONTENT_PLACEMENT[contpl_name].__name__)
 
         CONTENT_PLACEMENT[contpl_name](topology, workload.contents, **contpl_spec)
 

@@ -815,6 +815,89 @@ class BeladyMinCache(Cache):
     def clear(self):
         self._cache.clear()
 
+@register_cache_policy('BIP')
+class BipCache(Cache):
+    """Bimodal Insertion Policy
+	
+    https://people.csail.mit.edu/emer/papers/2007.06.isca.dip.pdf
+	
+    """
+	
+    @inheritdoc(Cache)
+    def __init__(self, maxlen, p = 1.0/32, **kwargs):
+        self._cache = LinkedSet()
+        self._maxlen = int(maxlen)
+        self.prob = p
+        if not 0 <= self.prob <= 1:
+        	raise ValueError('Probability must be between 0 and 1')
+        if self._maxlen <= 0:
+            raise ValueError('maxlen must be positive')
+            
+    @inheritdoc(Cache)
+    def __len__(self):
+        return len(self._cache)
+
+    @property
+    @inheritdoc(Cache)
+    def maxlen(self):
+        return self._maxlen
+
+    @inheritdoc(Cache)
+    def dump(self):
+        return list(iter(self._cache))
+        
+    @inheritdoc(Cache)
+    def has(self, k, *args, **kwargs):
+        return k in self._cache
+        
+    @inheritdoc(Cache)
+    def get(self, k, *args, **kwargs):
+        # search content over the list
+        # if it has it push on top, otherwise return false
+        if k not in self._cache:
+            return False
+        self._cache.move_to_top(k)
+        return True
+    
+    def put(self, k, *args, **kwargs):
+        """Insert an item in the cache if not already inserted.
+
+        If the element is already present in the cache, it will pushed to the
+        top of the cache.
+
+        Parameters
+        ----------
+        k : any hashable type
+            The item to be inserted
+
+        Returns
+        -------
+        evicted : any hashable type
+            The evicted object or *None* if no contents were evicted.
+        """
+        # if content in cache, push it on top, no eviction
+        if k in self._cache:
+            self._cache.move_to_top(k)
+            return None
+        # if content not in cache append it on top
+        evicted = self._cache.pop_bottom() if len(self._cache) == self._maxlen else None
+        if random.random() <= self.prob:
+        	self._cache.append_top(k)
+        else:
+        	self._cache.append_bottom(k)
+        return evicted
+
+    @inheritdoc(Cache)
+    def remove(self, k, *args, **kwargs):
+        if k not in self._cache:
+            return False
+        self._cache.remove(k)
+        return True
+
+    @inheritdoc(Cache)
+    def clear(self):
+        self._cache.clear()
+
 
 @register_cache_policy('LRU')
 class LruCache(Cache):
