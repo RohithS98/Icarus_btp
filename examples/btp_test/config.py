@@ -30,7 +30,7 @@ RESULTS_FORMAT = 'PICKLE'
 
 # Number of times each experiment is replicated
 # This is necessary for extracting confidence interval of selected metrics
-N_REPLICATIONS = 1
+N_REPLICATIONS = 2
 
 # List of metrics to be measured in the experiments
 # The implementation of data collectors are located in ./icaurs/execution/collectors.py
@@ -49,7 +49,7 @@ DATA_COLLECTORS = ['CACHE_HIT_RATIO', 'UTILIZATION', 'EVICTIONS', 'DIVERSITY', '
 # This would give problems while trying to plot the results because if for
 # example I wanted to filter experiment with alpha=0.8, experiments with
 # alpha = 0.799999999999 would not be recognized 
-ALPHA = [0.5]
+ALPHA = [1]
 
 # Total size of network cache as a fraction of content population
 NETWORK_CACHE = [0.05]
@@ -62,11 +62,11 @@ NETWORK_REQUEST_RATE = 10.0
 
 # Number of content requests generated to prepopulate the caches
 # These requests are not logged
-N_WARMUP_REQUESTS = 3*10**2
+N_WARMUP_REQUESTS = 3*10**3
 
 # Number of content requests generated after the warmup and logged
 # to generate results. 
-N_MEASURED_REQUESTS = 5*10**4
+N_MEASURED_REQUESTS = 5*10**5
 
 # List of all implemented topologies
 # Topology implementations are located in ./icarus/scenarios/topology.py
@@ -81,13 +81,14 @@ STRATEGIES = [
      'LCD',             # Leave Copy Everywhere
      #'PROB_CACHE',      # ProbCache
      'LCD',             # Leave Copy Down
-     #'TEST',
+     'TEST',
+     'TEST',
              ]
 
 # Cache replacement policy used by the network caches.
 # Supported policies are: 'LRU', 'LFU', 'FIFO', 'RAND' and 'NULL'
 # Cache policy implmentations are located in ./icarus/models/cache.py
-CACHE_POLICIES = ['LRU','BIP']
+CACHE_POLICIES = ['LRU','BIP','LRU','BIP']
 
 # Queue of experiments
 EXPERIMENT_QUEUE = deque()

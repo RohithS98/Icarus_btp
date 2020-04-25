@@ -10,7 +10,7 @@ CURR_DIR=`pwd`
 ICARUS_DIR=${CURR_DIR}/../..
 
 # Dir where plots will be saved 
-PLOTS_DIR=${CURR_DIR}/plots
+PLOTS_DIR=${CURR_DIR}/plot_cache
 
 # Config file
 CONFIG_FILE=${CURR_DIR}/config.py
@@ -23,8 +23,8 @@ export PYTHONPATH=${ICARUS_DIR}:$PYTHONPATH
 
 # Run experiments
 echo "Run experiments"
-icarus run --results ${RESULTS_FILE} ${CONFIG_FILE}
+#icarus run --results ${RESULTS_FILE} ${CONFIG_FILE}
 
 # Plot results
 #echo "Plot results"
-#python3 ${CURR_DIR}/plotresults.py --results ${RESULTS_FILE} --output ${PLOTS_DIR} ${CONFIG_FILE} 
+python3 ${CURR_DIR}/plot_cachepolicy.py --results ${RESULTS_FILE} --output ${PLOTS_DIR} ${CONFIG_FILE} 

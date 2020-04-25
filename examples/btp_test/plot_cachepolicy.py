@@ -44,319 +44,67 @@ PLOT_EMPTY_GRAPHS = True
 # Off-path strategies: solid lines
 # On-path strategies: dashed lines
 # No-cache: dotted line
-STRATEGY_STYLE = {
-         'LCE':             'b--p',
-         'LCD':             'g-->',
+CACHE_STYLE = {
+         'LRU':             'b--p',
+         'BIP':             'g-->',
          'PROB_CACHE':      'c--<',
          'TEST':  	    'r--*',
                 }
 
 # This dict maps name of strategies to names to be displayed in the legend
-STRATEGY_LEGEND = {
-         'LCE':             'LCE',
-         'LCD':             'LCD',
+CACHE_LEGEND = {
+         'LRU':             'LRU',
+         'BIP':             'BIP',
          'PROB_CACHE':      'ProbCache',
          'TEST':	    'Test Cache',
                     }
 
 # Color and hatch styles for bar charts of cache hit ratio and link load vs topology
-STRATEGY_BAR_COLOR = {
-    'LCE':          'k',
-    'LCD':          '0.4',
+CACHE_BAR_COLOR = {
+    'LRU':          'k',
+    'BIP':          '0.4',
     }
 
-STRATEGY_BAR_HATCH = {
-    'LCE':          None,
-    'LCD':          '//',
+CACHE_BAR_HATCH = {
+    'LRU':          None,
+    'BIP':          '//',
     }
 
-
-def plot_cache_hits_vs_alpha(resultset, topology, cache_size, alpha_range, strategies, plotdir):
-    if 'NO_CACHE' in strategies:
-        strategies.remove('NO_CACHE')
-    desc = {}
-    desc['title'] = 'Cache hit ratio: T=%s C=%s' % (topology, cache_size)
-    desc['ylabel'] = 'Cache hit ratio'
-    desc['xlabel'] = u'Content distribution \u03b1'
-    desc['xparam'] = ('workload', 'alpha')
-    desc['xvals'] = alpha_range
-    desc['filter'] = {'topology': {'name': topology},
-                      'cache_placement': {'network_cache': cache_size}}
-    desc['ymetrics'] = [('CACHE_HIT_RATIO', 'MEAN')]*len(strategies)
-    desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-    desc['ycondvals'] = strategies
-    desc['errorbar'] = True
-    desc['legend_loc'] = 'upper left'
-    desc['line_style'] = STRATEGY_STYLE
-    desc['legend'] = STRATEGY_LEGEND
-    desc['plotempty'] = PLOT_EMPTY_GRAPHS
-    plot_lines(resultset, desc, 'CACHE_HIT_RATIO_T=%s@C=%s.pdf'
-               % (topology, cache_size), plotdir)
-
-
-def plot_cache_hits_vs_cache_size(resultset, topology, alpha, cache_size_range, strategies, plotdir):
-    desc = {}
-    if 'NO_CACHE' in strategies:
-        strategies.remove('NO_CACHE')
-    desc['title'] = 'Cache hit ratio: T=%s A=%s' % (topology, alpha)
-    desc['xlabel'] = u'Cache to population ratio'
-    desc['ylabel'] = 'Cache hit ratio'
-    desc['xscale'] = 'log'
-    desc['xparam'] = ('cache_placement','network_cache')
-    desc['xvals'] = cache_size_range
-    desc['filter'] = {'topology': {'name': topology},
-                      'workload': {'name': 'STATIONARY', 'alpha': alpha}}
-    desc['ymetrics'] = [('CACHE_HIT_RATIO', 'MEAN')]*len(strategies)
-    desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-    desc['ycondvals'] = strategies
-    desc['errorbar'] = True
-    desc['legend_loc'] = 'upper left'
-    desc['line_style'] = STRATEGY_STYLE
-    desc['legend'] = STRATEGY_LEGEND
-    desc['plotempty'] = PLOT_EMPTY_GRAPHS
-    plot_lines(resultset, desc,'CACHE_HIT_RATIO_T=%s@A=%s.pdf'
-               % (topology, alpha), plotdir)
-    
-
-def plot_link_load_vs_alpha(resultset, topology, cache_size, alpha_range, strategies, plotdir):
-    desc = {}
-    desc['title'] = 'Internal link load: T=%s C=%s' % (topology, cache_size)
-    desc['xlabel'] = u'Content distribution \u03b1'
-    desc['ylabel'] = 'Internal link load'
-    desc['xparam'] = ('workload', 'alpha')
-    desc['xvals'] = alpha_range
-    desc['filter'] = {'topology': {'name': topology},
-                      'cache_placement': {'network_cache': cache_size}}
-    desc['ymetrics'] = [('LINK_LOAD', 'MEAN_INTERNAL')]*len(strategies)
-    desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-    desc['ycondvals'] = strategies
-    desc['errorbar'] = True
-    desc['legend_loc'] = 'upper right'
-    desc['line_style'] = STRATEGY_STYLE
-    desc['legend'] = STRATEGY_LEGEND
-    desc['plotempty'] = PLOT_EMPTY_GRAPHS
-    plot_lines(resultset, desc, 'LINK_LOAD_INTERNAL_T=%s@C=%s.pdf'
-               % (topology, cache_size), plotdir)
-
-
-def plot_link_load_vs_cache_size(resultset, topology, alpha, cache_size_range, strategies, plotdir):
-    desc = {}
-    desc['title'] = 'Internal link load: T=%s A=%s' % (topology, alpha)
-    desc['xlabel'] = 'Cache to population ratio'
-    desc['ylabel'] = 'Internal link load'
-    desc['xscale'] = 'log'
-    desc['xparam'] = ('cache_placement','network_cache')
-    desc['xvals'] = cache_size_range
-    desc['filter'] = {'topology': {'name': topology},
-                      'workload': {'name': 'stationary', 'alpha': alpha}}
-    desc['ymetrics'] = [('LINK_LOAD', 'MEAN_INTERNAL')]*len(strategies)
-    desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-    desc['ycondvals'] = strategies
-    desc['errorbar'] = True
-    desc['legend_loc'] = 'upper right'
-    desc['line_style'] = STRATEGY_STYLE
-    desc['legend'] = STRATEGY_LEGEND
-    desc['plotempty'] = PLOT_EMPTY_GRAPHS
-    plot_lines(resultset, desc, 'LINK_LOAD_INTERNAL_T=%s@A=%s.png'
-               % (topology, alpha), plotdir)
-    
-
-def plot_latency_vs_alpha(resultset, topology, cache_size, alpha_range, strategies, plotdir):
-    desc = {}
-    desc['title'] = 'Latency: T=%s C=%s' % (topology, cache_size)
-    desc['xlabel'] = u'Content distribution \u03b1'
-    desc['ylabel'] = 'Latency (ms)'
-    desc['xparam'] = ('workload', 'alpha')
-    desc['xvals'] = alpha_range
-    desc['filter'] = {'topology': {'name': topology},
-                      'cache_placement': {'network_cache': cache_size}}
-    desc['ymetrics'] = [('LATENCY', 'MEAN')]*len(strategies)
-    desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-    desc['ycondvals'] = strategies
-    desc['errorbar'] = True
-    desc['legend_loc'] = 'upper right'
-    desc['line_style'] = STRATEGY_STYLE
-    desc['legend'] = STRATEGY_LEGEND
-    desc['plotempty'] = PLOT_EMPTY_GRAPHS
-    plot_lines(resultset, desc, 'LATENCY_T=%s@C=%s.pdf'
-               % (topology, cache_size), plotdir)
-
-
-def plot_latency_vs_cache_size(resultset, topology, alpha, cache_size_range, strategies, plotdir):
-    desc = {}
-    desc['title'] = 'Latency: T=%s A=%s' % (topology, alpha)
-    desc['xlabel'] = 'Cache to population ratio'
-    desc['ylabel'] = 'Latency'
-    desc['xscale'] = 'log'
-    desc['xparam'] = ('cache_placement','network_cache')
-    desc['xvals'] = cache_size_range
-    desc['filter'] = {'topology': {'name': topology},
-                      'workload': {'name': 'STATIONARY', 'alpha': alpha}}
-    desc['ymetrics'] = [('LATENCY', 'MEAN')]*len(strategies)
-    desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-    desc['ycondvals'] = strategies
-    desc['metric'] = ('LATENCY', 'MEAN')
-    desc['errorbar'] = True
-    desc['legend_loc'] = 'upper right'
-    desc['line_style'] = STRATEGY_STYLE
-    desc['legend'] = STRATEGY_LEGEND
-    desc['plotempty'] = PLOT_EMPTY_GRAPHS
-    plot_lines(resultset, desc, 'LATENCY_T=%s@A=%s.pdf'
-               % (topology, alpha), plotdir)    
-
-def plot_link_load_vs_topology(resultset, alpha, cache_size, topology_range, strategies, plotdir):
-    """
-    Plot bar graphs of link load for specific values of alpha and cache
-    size for various topologies.
-    
-    The objective here is to show that our algorithms works well on all
-    topologies considered
-    """
-    desc = {}
-    desc['title'] = 'Internal link load: A=%s C=%s' % (alpha, cache_size)
-    desc['ylabel'] = 'Internal link load'
-    desc['xparam'] = ('topology', 'name')
-    desc['xvals'] = topology_range
-    desc['filter'] = {'cache_placement': {'network_cache': cache_size},
-                      'workload': {'name': 'STATIONARY', 'alpha': alpha}}
-    desc['ymetrics'] = [('LINK_LOAD', 'MEAN_INTERNAL')]*len(strategies)
-    desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-    desc['ycondvals'] = strategies
-    desc['errorbar'] = True
-    desc['legend_loc'] = 'lower right'
-    desc['bar_color'] = STRATEGY_BAR_COLOR
-    desc['bar_hatch'] = STRATEGY_BAR_HATCH
-    desc['legend'] = STRATEGY_LEGEND
-    desc['plotempty'] = PLOT_EMPTY_GRAPHS
-    plot_bar_chart(resultset, desc, 'LINK_LOAD_INTERNAL_A=%s_C=%s.pdf'
-                   % (alpha, cache_size), plotdir)
-
-def plot_cache_hits_vs_topology(resultset, alpha, cache_size, topology_range, strategies, plotdir):
-    """
-    Plot bar graphs of cache hit ratio for specific values of alpha and cache
-    size for various topologies.
-    
-    The objective here is to show that our algorithms works well on all
-    topologies considered
-    """
-    if 'NO_CACHE' in strategies:
-        strategies.remove('NO_CACHE')
-    desc = {}
-    desc['title'] = 'Cache hit ratio: A=%s C=%s' % (alpha, cache_size)
-    desc['ylabel'] = 'Cache hit ratio'
-    desc['xparam'] = ('topology', 'name')
-    desc['xvals'] = topology_range
-    desc['filter'] = {'cache_placement': {'network_cache': cache_size},
-                      'workload': {'name': 'STATIONARY', 'alpha': alpha}}
-    desc['ymetrics'] = [('CACHE_HIT_RATIO', 'MEAN')]*len(strategies)
-    desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-    desc['ycondvals'] = strategies
-    desc['errorbar'] = True
-    desc['legend_loc'] = 'lower right'
-    desc['bar_color'] = STRATEGY_BAR_COLOR
-    desc['bar_hatch'] = STRATEGY_BAR_HATCH
-    desc['legend'] = STRATEGY_LEGEND
-    desc['plotempty'] = PLOT_EMPTY_GRAPHS
-    plot_bar_chart(resultset, desc, 'CACHE_HIT_RATIO_A=%s_C=%s.pdf'
-                   % (alpha, cache_size), plotdir)
-
-def plot_cache_hit(resultset, topologies, strategies, cache_size, alpha, plotdir):
+def plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, title, ylab, ymetric, name):
+	print(policies, strategies, cache_size, alpha)
 	desc = {}
-	desc['title'] = 'Cache Hit Ratio vs Policy'
-	desc['ylabel'] = 'Cache Hit Ratio'
-	desc['xparam'] = ('name', 'policy')
-	desc['xvals'] = strategies
+	desc['title'] = title
+	desc['ylabel'] = ylab
+	desc['xparam'] = ('strategy', 'name')
+	desc['xvals'] = list(set(strategies))
 	desc['filter'] = {'cache_placement': {'network_cache': cache_size},
                       'workload': {'name': 'STATIONARY', 'alpha': alpha}}
-	desc['ymetrics'] = [('CACHE_HIT_RATIO', 'MEAN')]*len(strategies)
-	desc['ycondnames'] = [('policy', 'name')]*len(strategies)
-	desc['ycondvals'] = strategies
+	desc['ymetrics'] = [ymetric]*len(list(set(strategies)))
+	desc['ycondnames'] = [('cache_policy', 'name')]*len(list(set(strategies)))
+	desc['ycondvals'] = list(set(policies))
 	desc['errorbar'] = True
 	desc['legend_loc'] = 'lower right'
-	desc['bar_color'] = STRATEGY_BAR_COLOR
-	desc['bar_hatch'] = STRATEGY_BAR_HATCH
-	desc['legend'] = STRATEGY_LEGEND
+	desc['bar_color'] = CACHE_BAR_COLOR
+	desc['bar_hatch'] = CACHE_BAR_HATCH
+	desc['legend'] = CACHE_LEGEND
 	desc['plotempty'] = PLOT_EMPTY_GRAPHS
 	
-	plot_bar_chart(resultset, desc, 'Cache_Hit_Ratio_Strategy.png', plotdir)
+	plot_bar_chart(resultset, desc, name, plotdir)
+
+def plot_cache_hit(resultset, policies, strategies, cache_size, alpha, plotdir):
+	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Hit Ratio vs Policy', 'Cache Hit Ratio', ('CACHE_HIT_RATIO', 'MEAN'), 'Cache_Hit_Ratio_Policy.png')
 	
-def plot_path_stretch(resultset, topologies, strategies, cache_size, alpha, plotdir):
-	desc = {}
-	desc['title'] = 'Path Stretch vs Strategy'
-	desc['ylabel'] = 'Path Stretch'
-	desc['xparam'] = ('topology', 'name')
-	desc['xvals'] = topologies
-	desc['filter'] = {'cache_placement': {'network_cache': cache_size},
-                      'workload': {'name': 'STATIONARY', 'alpha': alpha}}
-	desc['ymetrics'] = [('PATH_STRETCH', 'MEAN')]*len(strategies)
-	desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-	desc['ycondvals'] = strategies
-	desc['errorbar'] = True
-	desc['legend_loc'] = 'lower right'
-	desc['bar_color'] = STRATEGY_BAR_COLOR
-	desc['bar_hatch'] = STRATEGY_BAR_HATCH
-	desc['legend'] = STRATEGY_LEGEND
-	desc['plotempty'] = PLOT_EMPTY_GRAPHS
-	print(strategies)
-	plot_bar_chart(resultset, desc, 'Path_Stretch_Strategy.png', plotdir)
+def plot_path_stretch(resultset, policies, strategies, cache_size, alpha, plotdir):
+	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Path Stretch vs Strategy', 'Path Stretch', ('PATH_STRETCH', 'MEAN'), 'Path_Stretch_Policy.png')
 	
-def plot_cache_evictions(resultset, topologies, strategies, cache_size, alpha, plotdir):
-	#print(resultset.prettyprint())
-	desc = {}
-	desc['title'] = 'Cache Evictions vs Strategy'
-	desc['ylabel'] = 'Cache Evictions'
-	desc['xparam'] = ('topology', 'name')
-	desc['xvals'] = topologies
-	desc['filter'] = {'cache_placement': {'network_cache': cache_size},
-                      'workload': {'name': 'STATIONARY', 'alpha': alpha}}
-	desc['ymetrics'] = [('EVICTIONS', 'NUMBER')]*len(strategies)
-	desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-	desc['ycondvals'] = strategies
-	desc['errorbar'] = True
-	desc['legend_loc'] = 'lower right'
-	desc['bar_color'] = STRATEGY_BAR_COLOR
-	desc['bar_hatch'] = STRATEGY_BAR_HATCH
-	desc['legend'] = STRATEGY_LEGEND
-	desc['plotempty'] = PLOT_EMPTY_GRAPHS
-	plot_bar_chart(resultset, desc, 'Cache_Evictions_Strategy.png', plotdir)
+def plot_cache_evictions(resultset, policies, strategies, cache_size, alpha, plotdir):
+	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Evictions vs Policy', 'Cache Evictions', ('EVICTIONS', 'NUMBER'), 'Cache_Evictions_Policy.png')
 	
-def plot_cache_utilization(resultset, topologies, strategies, cache_size, alpha, plotdir):
-	desc = {}
-	desc['title'] = 'Cache Utilization vs Strategy'
-	desc['ylabel'] = 'Cache Utilization'
-	desc['xparam'] = ('topology', 'name')
-	desc['xvals'] = topologies
-	desc['filter'] = {'cache_placement': {'network_cache': cache_size},
-                      'workload': {'name': 'STATIONARY', 'alpha': alpha}}
-	desc['ymetrics'] = [('UTILIZATION', 'MEAN')]*len(strategies)
-	desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-	desc['ycondvals'] = strategies
-	desc['errorbar'] = True
-	desc['legend_loc'] = 'lower right'
-	desc['bar_color'] = STRATEGY_BAR_COLOR
-	desc['bar_hatch'] = STRATEGY_BAR_HATCH
-	desc['legend'] = STRATEGY_LEGEND
-	desc['plotempty'] = PLOT_EMPTY_GRAPHS
-	plot_bar_chart(resultset, desc, 'Cache_Utilization_Strategy.png', plotdir)
+def plot_cache_utilization(resultset, policies, strategies, cache_size, alpha, plotdir):
+	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Utilization vs Policy', 'Cache Utilization', ('UTILIZATION', 'MEAN'), 'Cache_Utilization_Policy.png')
 	
-def plot_cache_diversity(resultset, topologies, strategies, cache_size, alpha, plotdir):
-	desc = {}
-	desc['title'] = 'Cache Diversity vs Strategy'
-	desc['ylabel'] = 'Cache Diversity'
-	desc['xparam'] = ('topology', 'name')
-	desc['xvals'] = topologies
-	desc['filter'] = {'cache_placement': {'network_cache': cache_size},
-                      'workload': {'name': 'STATIONARY', 'alpha': alpha}}
-	desc['ymetrics'] = [('DIVERSITY', 'MEAN')]*len(strategies)
-	desc['ycondnames'] = [('strategy', 'name')]*len(strategies)
-	desc['ycondvals'] = strategies
-	desc['errorbar'] = True
-	desc['legend_loc'] = 'lower right'
-	desc['bar_color'] = STRATEGY_BAR_COLOR
-	desc['bar_hatch'] = STRATEGY_BAR_HATCH
-	desc['legend'] = STRATEGY_LEGEND
-	desc['plotempty'] = PLOT_EMPTY_GRAPHS
-	plot_bar_chart(resultset, desc, 'Cache_Diversity_Strategy.png', plotdir)
+def plot_cache_diversity(resultset, policies, strategies, cache_size, alpha, plotdir):
+	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Diversity vs Policy', 'Cache Diversity', ('DIVERSITY', 'MEAN'), 'Cache_Diversity_Strategy.png')
 
 def run(config, results, plotdir):
     """Run the plot script
@@ -374,6 +122,7 @@ def run(config, results, plotdir):
     settings.read_from(config)
     config_logging(settings.LOG_LEVEL)
     resultset = RESULTS_READER[settings.RESULTS_FORMAT](results)
+    #print(resultset.prettyprint())
     # Create dir if not existsing
     if not os.path.exists(plotdir):
         os.makedirs(plotdir)
@@ -382,12 +131,15 @@ def run(config, results, plotdir):
     cache_sizes = settings.NETWORK_CACHE
     alphas = settings.ALPHA
     strategies = settings.STRATEGIES
+    policies = settings.CACHE_POLICIES
     # Plot graphs
-    plot_cache_hit(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)
-    #plot_path_stretch(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)
-    #plot_cache_evictions(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)
-    #plot_cache_utilization(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)
-    #plot_cache_diversity(resultset, topologies, strategies, cache_sizes[0], alphas[0], plotdir)
+    
+    plot_cache_hit(resultset, policies, strategies, cache_sizes[0], alphas[0], plotdir)
+    plot_path_stretch(resultset, policies, strategies, cache_sizes[0], alphas[0], plotdir)
+    plot_cache_evictions(resultset, policies, strategies, cache_sizes[0], alphas[0], plotdir)
+    plot_cache_utilization(resultset, policies, strategies, cache_sizes[0], alphas[0], plotdir)
+    plot_cache_diversity(resultset, policies, strategies, cache_sizes[0], alphas[0], plotdir)
+    
     '''
     for cache_size in cache_sizes:
         for alpha in alphas:
@@ -411,3 +163,26 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+'''def plot_cache_hit(resultset, policies, strategies, cache_size, alpha, plotdir):
+	print(policies, strategies, cache_size, alpha)
+	desc = {}
+	desc['title'] = 'Cache Hit Ratio vs Policy'
+	desc['ylabel'] = 'Cache Hit Ratio'
+	desc['xparam'] = ('strategy', 'name')
+	desc['xvals'] = list(set(strategies))
+	desc['filter'] = {'cache_placement': {'network_cache': cache_size},
+                      'workload': {'name': 'STATIONARY', 'alpha': alpha}}
+	desc['ymetrics'] = [('CACHE_HIT_RATIO', 'MEAN')]*len(list(set(strategies)))
+	desc['ycondnames'] = [('cache_policy', 'name')]*len(list(set(strategies)))
+	desc['ycondvals'] = list(set(policies))
+	desc['errorbar'] = True
+	desc['legend_loc'] = 'lower right'
+	desc['bar_color'] = CACHE_BAR_COLOR
+	desc['bar_hatch'] = CACHE_BAR_HATCH
+	desc['legend'] = CACHE_LEGEND
+	desc['plotempty'] = PLOT_EMPTY_GRAPHS
+	
+	plot_bar_chart(resultset, desc, 'Cache_Hit_Ratio_Policy.png', plotdir)'''
