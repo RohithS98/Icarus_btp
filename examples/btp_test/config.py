@@ -30,7 +30,7 @@ RESULTS_FORMAT = 'PICKLE'
 
 # Number of times each experiment is replicated
 # This is necessary for extracting confidence interval of selected metrics
-N_REPLICATIONS = 2
+N_REPLICATIONS = 5
 
 # List of metrics to be measured in the experiments
 # The implementation of data collectors are located in ./icaurs/execution/collectors.py
@@ -49,7 +49,7 @@ DATA_COLLECTORS = ['CACHE_HIT_RATIO', 'UTILIZATION', 'EVICTIONS', 'DIVERSITY', '
 # This would give problems while trying to plot the results because if for
 # example I wanted to filter experiment with alpha=0.8, experiments with
 # alpha = 0.799999999999 would not be recognized 
-ALPHA = [1]
+ALPHA = [0.4, 0.6, 0.8, 1, 1.2]
 
 # Total size of network cache as a fraction of content population
 NETWORK_CACHE = [0.05]
@@ -81,6 +81,8 @@ STRATEGIES = [
      'LCD',             # Leave Copy Everywhere
      #'PROB_CACHE',      # ProbCache
      'LCD',             # Leave Copy Down
+     'LCD',
+     'TEST',
      'TEST',
      'TEST',
              ]
@@ -88,7 +90,7 @@ STRATEGIES = [
 # Cache replacement policy used by the network caches.
 # Supported policies are: 'LRU', 'LFU', 'FIFO', 'RAND' and 'NULL'
 # Cache policy implmentations are located in ./icarus/models/cache.py
-CACHE_POLICIES = ['LRU','BIP','LRU','BIP']
+CACHE_POLICIES = ['LRU','BIP','EAF']*2
 
 # Queue of experiments
 EXPERIMENT_QUEUE = deque()
