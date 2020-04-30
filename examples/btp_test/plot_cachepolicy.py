@@ -60,15 +60,30 @@ CACHE_LEGEND = {
          'EAF':				'EAF',
                     }
 
+STRAT_LEGEND = {
+         'LCD':             'Leave Copy Down',
+         'TEST':             'Test',
+                    }
+
 # Color and hatch styles for bar charts of cache hit ratio and link load vs topology
 CACHE_BAR_COLOR = {
     'LRU':          'k',
     'BIP':          '0.4',
     }
 
+STRAT_BAR_COLOR = {
+    'LCD':          'k',
+    'TEST':         '0.4',
+    }
+
 CACHE_BAR_HATCH = {
     'LRU':          None,
     'BIP':          '//',
+    }
+    
+STRAT_BAR_HATCH = {
+    'LCD':          None,
+    'TEST':          '//',
     }
 
 def plot_cache_hits_vs_alpha(resultset, policies, cache_size, alpha_range, strategy, plotdir):
@@ -112,21 +127,43 @@ def plot_general_policy(resultset, policies, strategies, cache_size, alpha, plot
 	desc['plotempty'] = PLOT_EMPTY_GRAPHS
 
 	plot_bar_chart(resultset, desc, name, plotdir)
+	
+def plot_general_strat(resultset, policies, strategies, cache_size, alpha, plotdir, title, ylab, ymetric, name):
+	print(policies, strategies, cache_size, alpha)
+	desc = {}
+	desc['title'] = title
+	desc['ylabel'] = ylab
+	desc['xparam'] = ('cache_policy', 'name')
+	desc['xvals'] = list(set(policies))
+	desc['filter'] = {'cache_placement': {'network_cache': cache_size},
+                      'workload': {'name': 'STATIONARY', 'alpha': alpha}}
+	desc['ymetrics'] = [ymetric]*len(list(set(strategies)))
+	desc['ycondnames'] = [('strategy', 'name')]*len(list(set(strategies)))
+	desc['ycondvals'] = list(set(strategies))
+	desc['errorbar'] = True
+	desc['legend_loc'] = 'lower right'
+	desc['bar_color'] = STRAT_BAR_COLOR
+	desc['bar_hatch'] = STRAT_BAR_HATCH
+	desc['legend'] = STRAT_LEGEND
+	desc['plotempty'] = PLOT_EMPTY_GRAPHS
+
+	plot_bar_chart(resultset, desc, name, plotdir)
 
 def plot_cache_hit(resultset, policies, strategies, cache_size, alpha, plotdir):
-	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Hit Ratio vs Policy', 'Cache Hit Ratio', ('CACHE_HIT_RATIO', 'MEAN'), 'Cache_Hit_Ratio_Policy.png')
+	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Hit Ratio vs Policy', 'Cache Hit Ratio', ('CACHE_HIT_RATIO', 'MEAN'), 'Cache_Hit_Ratio_Policy_alpha_'+str(alpha)+'.png')
+	plot_general_strat(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Hit Ratio vs Policy', 'Cache Hit Ratio', ('CACHE_HIT_RATIO', 'MEAN'), 'Cache_Hit_Ratio_Strategy_alpha_'+str(alpha)+'.png')
 	
 def plot_path_stretch(resultset, policies, strategies, cache_size, alpha, plotdir):
-	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Path Stretch vs Strategy', 'Path Stretch', ('PATH_STRETCH', 'MEAN'), 'Path_Stretch_Policy.png')
+	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Path Stretch vs Strategy', 'Path Stretch', ('PATH_STRETCH', 'MEAN'), 'Path_Stretch_Policy_alpha_'+str(alpha)+'.png')
 	
 def plot_cache_evictions(resultset, policies, strategies, cache_size, alpha, plotdir):
-	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Evictions vs Policy', 'Cache Evictions', ('EVICTIONS', 'NUMBER'), 'Cache_Evictions_Policy.png')
+	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Evictions vs Policy', 'Cache Evictions', ('EVICTIONS', 'NUMBER'), 'Cache_Evictions_Policy_alpha_'+str(alpha)+'.png')
 	
 def plot_cache_utilization(resultset, policies, strategies, cache_size, alpha, plotdir):
-	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Utilization vs Policy', 'Cache Utilization', ('UTILIZATION', 'MEAN'), 'Cache_Utilization_Policy.png')
+	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Utilization vs Policy', 'Cache Utilization', ('UTILIZATION', 'MEAN'), 'Cache_Utilization_Policy_alpha_'+str(alpha)+'.png')
 	
 def plot_cache_diversity(resultset, policies, strategies, cache_size, alpha, plotdir):
-	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Diversity vs Policy', 'Cache Diversity', ('DIVERSITY', 'MEAN'), 'Cache_Diversity_Strategy.png')
+	plot_general_policy(resultset, policies, strategies, cache_size, alpha, plotdir, 'Cache Diversity vs Policy', 'Cache Diversity', ('DIVERSITY', 'MEAN'), 'Cache_Diversity_Strategy_alpha_'+str(alpha)+'.png')
 
 def run(config, results, plotdir):
     """Run the plot script
@@ -155,13 +192,13 @@ def run(config, results, plotdir):
     strategies = settings.STRATEGIES
     policies = settings.CACHE_POLICIES
     # Plot graphs
-    '''
-    plot_cache_hit(resultset, policies, strategies, cache_sizes[0], alphas[0], plotdir)
-    plot_path_stretch(resultset, policies, strategies, cache_sizes[0], alphas[0], plotdir)
-    plot_cache_evictions(resultset, policies, strategies, cache_sizes[0], alphas[0], plotdir)
-    plot_cache_utilization(resultset, policies, strategies, cache_sizes[0], alphas[0], plotdir)
-    plot_cache_diversity(resultset, policies, strategies, cache_sizes[0], alphas[0], plotdir)
-    '''
+    for alpha in alphas:
+    	plot_cache_hit(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
+    	#plot_path_stretch(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
+    	#plot_cache_evictions(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
+    	#plot_cache_utilization(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
+    	#plot_cache_diversity(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
+    
     
     
     for strat in list(set(strategies)):
