@@ -11,7 +11,7 @@ import copy
 
 import numpy as np
 
-from icarus.util import inheritdoc, apportionment
+from icarus.util import inheritdoc, apportionment, bloomFilter
 from icarus.registry import register_cache_policy
 
 
@@ -906,7 +906,7 @@ class EafCache(Cache):
     @inheritdoc(Cache)
     def __init__(self, maxlen, p = 1.0/32, **kwargs):
         self._cache = LinkedSet()
-        self._EAF = set()
+        self._EAF = bloomFilter(maxlen)
         self._maxlen = int(maxlen)
         self.prob = p
         if not 0 <= self.prob <= 1:
@@ -962,15 +962,18 @@ class EafCache(Cache):
             return None
         # if content not in cache append it on top
         evicted = self._cache.pop_bottom() if len(self._cache) == self._maxlen else None
-        if k in self._EAF:
+        if evicted:
+            self._EAF.insert(evicted)
+        
+        if self._EAF.check(k):
         	self._cache.append_top(k)
         elif random.random() <= self.prob:
         	self._cache.append_top(k)
         else:
         	self._cache.append_bottom(k)
-        self._EAF.add(k)
-        if len(self._EAF) == self._maxlen:
-        	self._EAF = set()
+        	
+        if self._EAF.getNum() == self._maxlen:
+            self._EAF.clear()
         return evicted
 
     @inheritdoc(Cache)
