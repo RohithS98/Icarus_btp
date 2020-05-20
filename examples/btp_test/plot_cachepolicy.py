@@ -212,16 +212,22 @@ def run(config, results, plotdir):
     strategies = settings.STRATEGIES
     policies = settings.CACHE_POLICIES
     # Plot graphs
+    '''
     for size in cache_sizes:
     	plot_cache_hit(resultset, policies, strategies, size, alphas[0], plotdir)
     	plot_path_stretch(resultset, policies, strategies, size, alphas[0], plotdir)
     	#plot_cache_evictions(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
     	#plot_cache_utilization(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
     	#plot_cache_diversity(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
+    '''
     
-    
+    for alpha in alphas:
+    	plot_cache_hit(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
+    	
+    	
     for strat in list(set(strategies)):
-         plot_cache_hits_vs_cache_size(resultset, policies, cache_sizes, alphas[0], strat, plotdir)
+         #plot_cache_hits_vs_cache_size(resultset, policies, cache_sizes, alphas[0], strat, plotdir)
+         plot_cache_hits_vs_alpha(resultset, policies, cache_sizes[0], alphas, strat, plotdir)
 
 
 def main():
