@@ -49,10 +49,10 @@ DATA_COLLECTORS = ['CACHE_HIT_RATIO', 'UTILIZATION', 'EVICTIONS', 'DIVERSITY', '
 # This would give problems while trying to plot the results because if for
 # example I wanted to filter experiment with alpha=0.8, experiments with
 # alpha = 0.799999999999 would not be recognized 
-ALPHA = [1.3]
+ALPHA = [0.4, 0.7, 1, 1.3, 1.6]
 
 # Total size of network cache as a fraction of content population
-NETWORK_CACHE = [0.04, 0.08, 0.1, 0.2, 0.4]
+NETWORK_CACHE = [0.04]
 
 # Number of content objects
 N_CONTENTS = 7*10**3

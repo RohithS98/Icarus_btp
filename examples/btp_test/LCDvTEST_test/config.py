@@ -49,13 +49,13 @@ DATA_COLLECTORS = ['CACHE_HIT_RATIO', 'UTILIZATION', 'EVICTIONS', 'DIVERSITY', '
 # This would give problems while trying to plot the results because if for
 # example I wanted to filter experiment with alpha=0.8, experiments with
 # alpha = 0.799999999999 would not be recognized 
-ALPHA = [1.3]
+ALPHA = [0.4, 0.6, 0.8, 1, 1.2, 1.4]
 
 # Total size of network cache as a fraction of content population
-NETWORK_CACHE = [0.04, 0.08, 0.1, 0.2, 0.4]
+NETWORK_CACHE = [0.04]
 
 # Number of content objects
-N_CONTENTS = 7*10**3
+N_CONTENTS = 4*10**3
 
 # Number of requests per second (over the whole network)
 NETWORK_REQUEST_RATE = 10.0
@@ -81,22 +81,14 @@ STRATEGIES = [
      'LCD',             
      #'PROB_CACHE',      # ProbCache
      'LCD',             # Leave Copy Down
-     'LCD',
      'TEST',
      'TEST',
-     'TEST',
-     'LCE',
-     'LCE',
-     'LCE',
-     'PROB_CACHE',
-     'PROB_CACHE',
-     'PROB_CACHE',
              ]
 
 # Cache replacement policy used by the network caches.
 # Supported policies are: 'LRU', 'LFU', 'FIFO', 'RAND' and 'NULL'
 # Cache policy implmentations are located in ./icarus/models/cache.py
-CACHE_POLICIES = ['BIP','EAF','LRU']*4
+CACHE_POLICIES = ['BIP','EAF']*2
 
 # Queue of experiments
 EXPERIMENT_QUEUE = deque()
