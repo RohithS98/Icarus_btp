@@ -166,7 +166,6 @@ def plot_general_strat(resultset, policies, strategies, cache_size, alpha, plotd
 	desc['ycondnames'] = [('strategy', 'name')]*len(list(set(strategies)))
 	desc['ycondvals'] = sorted(list(set(strategies)))
 	desc['ycondvals'] = [desc['ycondvals'][-1]] + desc['ycondvals'][:-1]
-	#print(desc['ycondvals'])
 	desc['errorbar'] = True
 	desc['legend_loc'] = 'lower right'
 	desc['bar_color'] = STRAT_BAR_COLOR
@@ -229,13 +228,16 @@ def run(config, results, plotdir):
     	#plot_cache_diversity(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
     '''
     
-    for alpha in alphas:
-    	plot_cache_hit(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
+    for size in cache_sizes:
+    	plot_cache_hit(resultset, policies, strategies, size, alphas[0], plotdir)
+    
+    #for alpha in alphas:
+    	#plot_cache_hit(resultset, policies, strategies, cache_sizes[0], alpha, plotdir)
     	
     	
     for strat in list(set(strategies)):
-         #plot_cache_hits_vs_cache_size(resultset, policies, cache_sizes, alphas[0], strat, plotdir)
-         plot_cache_hits_vs_alpha(resultset, policies, cache_sizes[0], alphas, strat, plotdir)
+         plot_cache_hits_vs_cache_size(resultset, policies, cache_sizes, alphas[0], strat, plotdir)
+         #plot_cache_hits_vs_alpha(resultset, policies, cache_sizes[0], alphas, strat, plotdir)
 
 
 def main():
